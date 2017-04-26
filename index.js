@@ -17,6 +17,21 @@ class Item extends React.Component {
     }
 }
 
+class SearchPlugin extends React.Component {
+    constructor(props) {
+        super(props);
+        this.onTextChanged = this.onTextChanged.bind(this);
+    }
+    onTextChanged(e) {
+        console.log('val', e.target.value);
+        var text = e.target.value.trim();
+        this.props.filter(text);
+    }
+    render() {
+        return <input placeholder="Поиск" onChange={this.onTextChanged} />
+    }
+}
+
 // Компонент списка с полем поиска
 class ItemsList extends React.Component {
     // При монтирование инициализируем конструктор
@@ -30,23 +45,23 @@ class ItemsList extends React.Component {
         // Чтобы из функции можно было обратится объекту компонента а не к самой функции
         this.filterList = this.filterList.bind(this);
     }
-    filterList(e) {
+    filterList(text) {
         // Берем статичный список и проходимся по каждому элементу
         // подставляя введенное значение в input
-        var filterList = this.props.data.items.filter(function(item) {
-            return item.toLowerCase().search(e.target.value.toLowerCase()) !== -1;
+        var filteredList = this.props.data.items.filter(function(item) {
+            return item.toLowerCase().search(text.toLowerCase()) !== -1;
         });
 
         // обновляем переменное хоранилище
         this.setState({
-            items: filterList
+            items: filteredList
         })
     }
     render() {
         return (
             <div>
                 <h2>{this.props.data.title}</h2>
-                <input placeholder="Поиск" onChange={this.filterList} />
+                <SearchPlugin filter={this.filterList} />
                 <ul>
                     {
                         this.state.items.map(function(item) {
